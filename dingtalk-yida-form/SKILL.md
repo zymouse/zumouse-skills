@@ -1,15 +1,17 @@
 ---
 name: dingtalk-yida-form
-description: 钉钉宜搭(YiDa)云表单实例的增删查改操作。Use when user needs to interact with DingTalk YiDa form instances via Go API, including creating, reading, updating, deleting form data, batch operations, querying form instances, updating sub-tables, or managing form data programmatically.
+description: 钉钉宜搭(YiDa)云表单实例的增删查改操作。Use when user needs to interact with DingTalk YiDa form instances via Go or Python API, including creating, reading, updating, deleting form data, batch operations, querying form instances, updating sub-tables, or managing form data programmatically.
 ---
 
 # DingTalk YiDa Form Skill
 
-钉钉宜搭云表单实例的 Go API 操作指南。
+钉钉宜搭云表单实例的 Go/Python API 操作指南。
 
 ## Quick Start
 
-### 1. 安装依赖
+### Go
+
+#### 1. 安装依赖
 
 ```bash
 go get github.com/alibabacloud-go/dingtalk/yida_2_0
@@ -18,7 +20,7 @@ go get github.com/alibabacloud-go/tea-utils/v2/service
 go get github.com/alibabacloud-go/tea/tea
 ```
 
-### 2. 初始化客户端
+#### 2. 初始化客户端
 
 ```go
 import (
@@ -35,37 +37,31 @@ func CreateClient() (*yida_2_0.Client, error) {
 }
 ```
 
-### 3. 通用调用模式
+### Python
 
-所有 API 调用遵循以下模式：
+#### 1. 安装依赖
 
-```go
-// 1. 创建客户端
-client, err := CreateClient()
+```bash
+pip install alibabacloud_dingtalk
+```
 
-// 2. 设置请求头（包含 AccessToken）
-headers := &yida_2_0.XXXHeaders{}
-headers.XAcsDingtalkAccessToken = tea.String("<access_token>")
+#### 2. 初始化客户端
 
-// 3. 构建请求参数
-request := &yida_2_0.XXXRequest{
-    AppType:     tea.String("APP_XXXXX"),
-    SystemToken: tea.String("xxxxx"),
-    UserId:      tea.String("user123"),
-    FormUuid:    tea.String("FORM-XXXXX"),
-    // ... 其他参数
-}
+```python
+from alibabacloud_dingtalk.yida_2_0.client import Client as dingtalkyida_2_0Client
+from alibabacloud_tea_openapi import models as open_api_models
 
-// 4. 执行调用
-response, err := client.XXXWithOptions(request, headers, &util.RuntimeOptions{})
+config = open_api_models.Config()
+config.protocol = 'https'
+config.region_id = 'central'
+client = dingtalkyida_2_0Client(config)
 ```
 
 ## Core Operations
 
 ### 创建表单实例
 
-使用 `SaveFormData` 创建新实例：
-
+**Go:**
 ```go
 request := &yida_2_0.SaveFormDataRequest{
     AppType:      tea.String("APP_XXX"),
@@ -77,10 +73,23 @@ request := &yida_2_0.SaveFormDataRequest{
 response, err := client.SaveFormDataWithOptions(request, headers, &util.RuntimeOptions{})
 ```
 
+**Python:**
+```python
+from alibabacloud_dingtalk.yida_2_0 import models as dingtalkyida__2__0_models
+
+request = dingtalkyida__2__0_models.SaveFormDataRequest(
+    app_type='APP_XXX',
+    system_token='token',
+    user_id='user123',
+    form_uuid='FORM-XXX',
+    form_data_json='{"textField_xxx": "value"}'
+)
+response = client.save_form_data_with_options(request, headers, util_models.RuntimeOptions())
+```
+
 ### 查询表单实例列表
 
-使用 `SearchFormDatas` 查询多条数据：
-
+**Go:**
 ```go
 request := &yida_2_0.SearchFormDatasRequest{
     AppType:         tea.String("APP_XXX"),
@@ -93,36 +102,27 @@ request := &yida_2_0.SearchFormDatasRequest{
 response, err := client.SearchFormDatasWithOptions(request, headers, &util.RuntimeOptions{})
 ```
 
-### 查询单条表单数据
-
-使用 `GetFormDataByID` 根据实例ID查询：
-
-```go
-request := &yida_2_0.GetFormDataByIDRequest{
-    AppType:     tea.String("APP_XXX"),
-    SystemToken: tea.String("token"),
-    UserId:      tea.String("user123"),
-    FormUuid:    tea.String("FORM-XXX"),
-    UseAlias:    tea.Bool(true),
-}
-// formInstId 作为路径参数
-response, err := client.GetFormDataByIDWithOptions(
-    tea.String("FORM_INST_12345"),
-    request,
-    headers,
-    &util.RuntimeOptions{},
+**Python:**
+```python
+request = dingtalkyida__2__0_models.SearchFormDatasRequest(
+    app_type='APP_XXX',
+    system_token='token',
+    form_uuid='FORM-XXX',
+    current_page=1,
+    page_size=10,
+    search_field_json='{"textField_xxx": "searchValue"}'
 )
+response = client.search_form_datas_with_options(request, headers, util_models.RuntimeOptions())
 ```
 
 ### 更新表单数据
 
-使用 `UpdateFormData` 更新现有实例：
-
+**Go:**
 ```go
 request := &yida_2_0.UpdateFormDataRequest{
-    AppType:          tea.String("APP_XXX"),
-    SystemToken:      tea.String("token"),
-    UserId:           tea.String("user123"),
+    AppType:            tea.String("APP_XXX"),
+    SystemToken:        tea.String("token"),
+    UserId:             tea.String("user123"),
     FormInstanceId:   tea.String("FORM_INST_12345"),
     UpdateFormDataJson: tea.String(`{"textField_xxx": "newValue"}`),
     UseLatestVersion: tea.Bool(false),
@@ -130,10 +130,22 @@ request := &yida_2_0.UpdateFormDataRequest{
 response, err := client.UpdateFormDataWithOptions(request, headers, &util.RuntimeOptions{})
 ```
 
+**Python:**
+```python
+request = dingtalkyida__2__0_models.UpdateFormDataRequest(
+    app_type='APP_XXX',
+    system_token='token',
+    user_id='user123',
+    form_instance_id='FORM_INST_12345',
+    update_form_data_json='{"textField_xxx": "newValue"}',
+    use_latest_version=False
+)
+response = client.update_form_data_with_options(request, headers, util_models.RuntimeOptions())
+```
+
 ### 删除表单数据
 
-使用 `DeleteFormData` (yida_1_0) 删除实例：
-
+**Go:**
 ```go
 import "github.com/alibabacloud-go/dingtalk/yida_1_0"
 
@@ -146,6 +158,19 @@ request := &yida_1_0.DeleteFormDataRequest{
 response, err := client.DeleteFormDataWithOptions(request, headers, &util.RuntimeOptions{})
 ```
 
+**Python:**
+```python
+from alibabacloud_dingtalk.yida_1_0 import models as dingtalkyida__1__0_models
+
+request = dingtalkyida__1__0_models.DeleteFormDataRequest(
+    app_type='APP_XXX',
+    system_token='token',
+    user_id='user123',
+    form_instance_id='FORM_INST_12345'
+)
+response = client.delete_form_data_with_options(request, headers, util_models.RuntimeOptions())
+```
+
 ## Version Selection
 
 钉钉宜搭 API 有两个版本，根据操作类型选择：
@@ -155,6 +180,14 @@ response, err := client.DeleteFormDataWithOptions(request, headers, &util.Runtim
 | 单条 CRUD | yida_2_0 | 功能更完善，支持更多参数 |
 | 批量操作 | yida_1_0 | 批量 API 仅在 1.0 中提供 |
 | 删除操作 | yida_1_0 | DeleteFormData 仅在 1.0 中提供 |
+
+**Go 导入:**
+- yida_2_0: `github.com/alibabacloud-go/dingtalk/yida_2_0`
+- yida_1_0: `github.com/alibabacloud-go/dingtalk/yida_1_0`
+
+**Python 导入:**
+- yida_2_0: `from alibabacloud_dingtalk.yida_2_0.client import Client as dingtalkyida_2_0Client`
+- yida_1_0: `from alibabacloud_dingtalk.yida_1_0.client import Client as dingtalkyida_1_0Client`
 
 ## Common Parameters
 
@@ -171,8 +204,7 @@ response, err := client.DeleteFormDataWithOptions(request, headers, &util.Runtim
 
 ## Error Handling
 
-统一错误处理模式：
-
+**Go:**
 ```go
 tryErr := func()(_e error) {
     defer func() {
@@ -193,7 +225,20 @@ if tryErr != nil {
 }
 ```
 
+**Python:**
+```python
+from alibabacloud_tea_util.client import Client as UtilClient
+
+try:
+    response = client.xxx_with_options(request, headers, util_models.RuntimeOptions())
+except Exception as err:
+    if not UtilClient.empty(err.code) and not UtilClient.empty(err.message):
+        # err.code 和 err.message 包含错误详情
+        pass
+```
+
 ## References
 
 - **完整 API 列表和参数说明**: 见 [references/api-reference.md](references/api-reference.md)
-- **详细代码示例**: 见 [references/code-examples.md](references/code-examples.md)
+- **详细代码示例 (Go + Python)**: 见 [references/code-examples.md](references/code-examples.md)
+- **官方 API 代码示例**: 见 [references/1.md](references/1.md)

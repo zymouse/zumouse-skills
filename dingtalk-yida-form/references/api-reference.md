@@ -19,8 +19,15 @@
 
 ### yida_2_0 (推荐用于单条操作)
 
+**Go:**
 ```go
 import "github.com/alibabacloud-go/dingtalk/yida_2_0"
+```
+
+**Python:**
+```python
+from alibabacloud_dingtalk.yida_2_0.client import Client as dingtalkyida_2_0Client
+from alibabacloud_dingtalk.yida_2_0 import models as dingtalkyida__2__0_models
 ```
 
 适用场景：
@@ -30,8 +37,15 @@ import "github.com/alibabacloud-go/dingtalk/yida_2_0"
 
 ### yida_1_0 (用于批量和删除操作)
 
+**Go:**
 ```go
 import "github.com/alibabacloud-go/dingtalk/yida_1_0"
+```
+
+**Python:**
+```python
+from alibabacloud_dingtalk.yida_1_0.client import Client as dingtalkyida_1_0Client
+from alibabacloud_dingtalk.yida_1_0 import models as dingtalkyida__1__0_models
 ```
 
 适用场景：
@@ -51,12 +65,23 @@ import "github.com/alibabacloud-go/dingtalk/yida_1_0"
 
 创建新的表单实例。
 
+**Go:**
 ```go
 func (client *Client) SaveFormDataWithOptions(
     request *SaveFormDataRequest,
     headers *SaveFormDataHeaders,
     runtime *util.RuntimeOptions,
 ) (*SaveFormDataResponse, error)
+```
+
+**Python:**
+```python
+def save_form_data_with_options(
+    self,
+    request: dingtalkyida__2__0_models.SaveFormDataRequest,
+    headers: dingtalkyida__2__0_models.SaveFormDataHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.SaveFormDataResponse
 ```
 
 **Request Parameters:**
@@ -83,12 +108,23 @@ func (client *Client) SaveFormDataWithOptions(
 
 根据条件创建或更新表单实例。
 
+**Go:**
 ```go
 func (client *Client) CreateOrUpdateFormDataWithOptions(
     request *CreateOrUpdateFormDataRequest,
     headers *CreateOrUpdateFormDataHeaders,
     runtime *util.RuntimeOptions,
 ) (*CreateOrUpdateFormDataResponse, error)
+```
+
+**Python:**
+```python
+def create_or_update_form_data_with_options(
+    self,
+    request: dingtalkyida__2__0_models.CreateOrUpdateFormDataRequest,
+    headers: dingtalkyida__2__0_models.CreateOrUpdateFormDataHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.CreateOrUpdateFormDataResponse
 ```
 
 **Additional Parameters:**
@@ -106,12 +142,23 @@ func (client *Client) CreateOrUpdateFormDataWithOptions(
 
 分页查询表单实例列表。
 
+**Go:**
 ```go
 func (client *Client) SearchFormDatasWithOptions(
     request *SearchFormDatasRequest,
     headers *SearchFormDatasHeaders,
     runtime *util.RuntimeOptions,
 ) (*SearchFormDatasResponse, error)
+```
+
+**Python:**
+```python
+def search_form_datas_with_options(
+    self,
+    request: dingtalkyida__2__0_models.SearchFormDatasRequest,
+    headers: dingtalkyida__2__0_models.SearchFormDatasHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.SearchFormDatasResponse
 ```
 
 **Request Parameters:**
@@ -172,6 +219,7 @@ func (client *Client) SearchFormDatasWithOptions(
 
 根据实例ID查询单条表单数据。
 
+**Go:**
 ```go
 func (client *Client) GetFormDataByIDWithOptions(
     formInstId *string,  // 路径参数
@@ -179,6 +227,17 @@ func (client *Client) GetFormDataByIDWithOptions(
     headers *GetFormDataByIDHeaders,
     runtime *util.RuntimeOptions,
 ) (*GetFormDataByIDResponse, error)
+```
+
+**Python:**
+```python
+def get_form_data_by_idwith_options(
+    self,
+    form_inst_id: str,  # 路径参数
+    request: dingtalkyida__2__0_models.GetFormDataByIDRequest,
+    headers: dingtalkyida__2__0_models.GetFormDataByIDHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.GetFormDataByIDResponse
 ```
 
 **Request Parameters:**
@@ -220,12 +279,23 @@ func (client *Client) GetFormDataByIDWithOptions(
 
 更新表单实例数据。
 
+**Go:**
 ```go
 func (client *Client) UpdateFormDataWithOptions(
     request *UpdateFormDataRequest,
     headers *UpdateFormDataHeaders,
     runtime *util.RuntimeOptions,
 ) (*UpdateFormDataResponse, error)
+```
+
+**Python:**
+```python
+def update_form_data_with_options(
+    self,
+    request: dingtalkyida__2__0_models.UpdateFormDataRequest,
+    headers: dingtalkyida__2__0_models.UpdateFormDataHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.UpdateFormDataResponse
 ```
 
 **Request Parameters:**
@@ -246,12 +316,23 @@ func (client *Client) UpdateFormDataWithOptions(
 
 更新子表单数据。
 
+**Go:**
 ```go
 func (client *Client) UpdateSubTableWithOptions(
     request *UpdateSubTableRequest,
     headers *UpdateSubTableHeaders,
     runtime *util.RuntimeOptions,
 ) (*UpdateSubTableResponse, error)
+```
+
+**Python:**
+```python
+def update_sub_table_with_options(
+    self,
+    request: dingtalkyida__2__0_models.UpdateSubTableRequest,
+    headers: dingtalkyida__2__0_models.UpdateSubTableHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.UpdateSubTableResponse
 ```
 
 **Additional Parameters:**
@@ -288,12 +369,23 @@ func (client *Client) UpdateSubTableWithOptions(
 
 删除单条表单数据。
 
+**Go:**
 ```go
 func (client *Client) DeleteFormDataWithOptions(
     request *DeleteFormDataRequest,
     headers *DeleteFormDataHeaders,
     runtime *util.RuntimeOptions,
 ) (*DeleteFormDataResponse, error)
+```
+
+**Python:**
+```python
+def delete_form_data_with_options(
+    self,
+    request: dingtalkyida__1__0_models.DeleteFormDataRequest,
+    headers: dingtalkyida__1__0_models.DeleteFormDataHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__1__0_models.DeleteFormDataResponse
 ```
 
 **Request Parameters:**
@@ -314,12 +406,23 @@ func (client *Client) DeleteFormDataWithOptions(
 
 批量创建表单实例。
 
+**Go:**
 ```go
 func (client *Client) BatchSaveFormDataWithOptions(
     request *BatchSaveFormDataRequest,
     headers *BatchSaveFormDataHeaders,
     runtime *util.RuntimeOptions,
 ) (*BatchSaveFormDataResponse, error)
+```
+
+**Python:**
+```python
+def batch_save_form_data_with_options(
+    self,
+    request: dingtalkyida__1__0_models.BatchSaveFormDataRequest,
+    headers: dingtalkyida__1__0_models.BatchSaveFormDataHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__1__0_models.BatchSaveFormDataResponse
 ```
 
 **Additional Parameters:**
@@ -343,12 +446,23 @@ func (client *Client) BatchSaveFormDataWithOptions(
 
 批量获取表单实例数据。
 
+**Go:**
 ```go
 func (client *Client) BatchGetFormDataByIdListWithOptions(
     request *BatchGetFormDataByIdListRequest,
     headers *BatchGetFormDataByIdListHeaders,
     runtime *util.RuntimeOptions,
 ) (*BatchGetFormDataByIdListResponse, error)
+```
+
+**Python:**
+```python
+def batch_get_form_data_by_id_list_with_options(
+    self,
+    request: dingtalkyida__1__0_models.BatchGetFormDataByIdListRequest,
+    headers: dingtalkyida__1__0_models.BatchGetFormDataByIdListHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__1__0_models.BatchGetFormDataByIdListResponse
 ```
 
 **Additional Parameters:**
@@ -362,12 +476,23 @@ func (client *Client) BatchGetFormDataByIdListWithOptions(
 
 批量更新表单实例。
 
+**Go:**
 ```go
 func (client *Client) BatchUpdateFormDataByInstanceIdWithOptions(
     request *BatchUpdateFormDataByInstanceIdRequest,
     headers *BatchUpdateFormDataByInstanceIdHeaders,
     runtime *util.RuntimeOptions,
 ) (*BatchUpdateFormDataByInstanceIdResponse, error)
+```
+
+**Python:**
+```python
+def batch_update_form_data_by_instance_id_with_options(
+    self,
+    request: dingtalkyida__1__0_models.BatchUpdateFormDataByInstanceIdRequest,
+    headers: dingtalkyida__1__0_models.BatchUpdateFormDataByInstanceIdHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__1__0_models.BatchUpdateFormDataByInstanceIdResponse
 ```
 
 **Additional Parameters:**
@@ -383,12 +508,23 @@ func (client *Client) BatchUpdateFormDataByInstanceIdWithOptions(
 
 批量删除表单实例。
 
+**Go:**
 ```go
 func (client *Client) BatchRemovalByFormInstanceIdListWithOptions(
     request *BatchRemovalByFormInstanceIdListRequest,
     headers *BatchRemovalByFormInstanceIdListHeaders,
     runtime *util.RuntimeOptions,
 ) (*BatchRemovalByFormInstanceIdListResponse, error)
+```
+
+**Python:**
+```python
+def batch_removal_by_form_instance_id_list_with_options(
+    self,
+    request: dingtalkyida__1__0_models.BatchRemovalByFormInstanceIdListRequest,
+    headers: dingtalkyida__1__0_models.BatchRemovalByFormInstanceIdListHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__1__0_models.BatchRemovalByFormInstanceIdListResponse
 ```
 
 **Additional Parameters:**
@@ -407,6 +543,7 @@ func (client *Client) BatchRemovalByFormInstanceIdListWithOptions(
 
 获取流程设计结构。
 
+**Go:**
 ```go
 func (client *Client) GetProcessDesignWithOptions(
     processCode *string,  // 路径参数
@@ -416,10 +553,22 @@ func (client *Client) GetProcessDesignWithOptions(
 ) (*GetProcessDesignResponse, error)
 ```
 
+**Python:**
+```python
+def get_process_design_with_options(
+    self,
+    process_code: str,  # 路径参数
+    request: dingtalkyida__1__0_models.GetProcessDesignRequest,
+    headers: dingtalkyida__1__0_models.GetProcessDesignHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__1__0_models.GetProcessDesignResponse
+```
+
 ### GetFormComponentAliasList (yida_2_0)
 
 获取组件别名列表。
 
+**Go:**
 ```go
 func (client *Client) GetFormComponentAliasListWithOptions(
     appType *string,      // 路径参数
@@ -428,6 +577,18 @@ func (client *Client) GetFormComponentAliasListWithOptions(
     headers *GetFormComponentAliasListHeaders,
     runtime *util.RuntimeOptions,
 ) (*GetFormComponentAliasListResponse, error)
+```
+
+**Python:**
+```python
+def get_form_component_alias_list_with_options(
+    self,
+    app_type: str,      # 路径参数
+    form_uuid: str,     # 路径参数
+    request: dingtalkyida__2__0_models.GetFormComponentAliasListRequest,
+    headers: dingtalkyida__2__0_models.GetFormComponentAliasListHeaders,
+    runtime: util_models.RuntimeOptions
+) -> dingtalkyida__2__0_models.GetFormComponentAliasListResponse
 ```
 
 ---
