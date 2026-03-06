@@ -1,0 +1,97 @@
+cmake_minimum_required(VERSION 3.8)
+project({{PROJECT_NAME}})
+
+# find dependencies: ros2相关的依赖直接使用ament_cmake_auto查找
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
+
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# 查找 非ROS 依赖
+find_package({{lib_name}} REQUIRED)
+
+# library --------------------------------------------------
+ament_auto_add_library(${PROJECT_NAME} SHARED
+  src/libs/sqlite_wrapper.cpp 
+  src/libs/task_record_db.cpp
+  src/libs/sqlite_statement_wrapper.cpp
+  src/task_record_node.cpp
+)
+
+# 链接依赖库
+ament_target_dependencies(${PROJECT_NAME}
+  {{lib_name}}
+)
+
+# 设置头文件包含目录
+target_include_directories(${PROJECT_NAME} PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+rclcpp_components_register_node(${PROJECT_NAME}
+  PLUGIN "{{PROJECT_NAME}}::{{Class_NAME}}"
+  EXECUTABLE ${PROJECT_NAME}_node
+)
+
+# 测试可执行文件
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+
+  # 添加测试可执行文件
+  add_executable(test_task_record_db
+    test/test_task_record_db.cpp
+  )
+
+  target_include_directories(test_task_record_db PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+
+  target_link_libraries(test_task_record_db
+    ${PROJECT_NAME}
+  )
+
+  # 添加测试
+  ament_add_test(
+    test_task_record_db
+    COMMAND test_task_record_db
+    TIMEOUT 60
+  )
+  # 安装测试可执行文件
+  install(
+    TARGETS test_task_record_db
+    DESTINATION lib/${PROJECT_NAME}/test
+  )
+endif()
+
+
+install(
+  TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+install(
+  PROGRAMS
+    scripts/find_mcap_by_time.py
+    scripts/recoder_tools.py
+    scripts/mcap_compressor.py
+    scripts/alarm_monitor_node.py
+    scripts/auto_mount_failcase_data.sh
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_auto_package(
+  INSTALL_TO_SHARE
+  launch
+  config
+)
