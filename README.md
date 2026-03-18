@@ -11,6 +11,7 @@
 | [kimi-agent-sdk-go](.agents/skills/kimi-agent-sdk-go/) | Kimi Agent SDK for Go | 使用Go开发基于Kimi Agent的应用程序，包括创建会话、发送prompt、处理响应、外部工具、审批请求、thinking模式、turn取消、用量追踪等 |
 | [ros2-pkg-dev](.agents/skills/ros2-pkg-dev/) | ROS2功能包开发 | ROS2功能包开发规范与代码模板，支持C++ rclcpp和Python rclpy |
 | [feishu-bot-dev](.agents/skills/feishu-bot-dev/) | 飞书机器人开发指南 | 使用Go SDK开发飞书机器人，包括认证、消息发送、回调处理、群聊管理、文件上传下载、卡片消息等 |
+| [rustfs-go-dev](.agents/skills/rustfs-go-dev/) | 本地分布式存储 | 使用Go SDK开发本地存储工具 |
 
 ## 技能安装
 
