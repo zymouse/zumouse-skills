@@ -1,11 +1,11 @@
 ---
 name: aliyun-oss-dev
-description: 阿里云OSS（对象存储服务）开发指南，支持Go和Python SDK。Use when user needs to develop applications using Alibaba Cloud OSS, including bucket operations, object upload/download, multipart upload, presigned URLs, client-side encryption, or any OSS-related development tasks in Go or Python.
+description: 阿里云OSS（对象存储服务）开发指南，支持Go、Python和C++ SDK。Use when user needs to develop applications using Alibaba Cloud OSS, including bucket operations, object upload/download, multipart upload, presigned URLs, client-side encryption, or any OSS-related development tasks in Go, Python, or C++.
 ---
 
 # 阿里云OSS开发指南
 
-本Skill提供阿里云对象存储服务（OSS）的开发指导，支持Go和Python两种语言的SDK V2版本。
+本Skill提供阿里云对象存储服务（OSS）的开发指导，支持Go、Python和C++三种语言的SDK。
 
 ## SDK安装
 
@@ -17,6 +17,12 @@ go get github.com/aliyun/alibabacloud-oss-go-sdk-v2
 ### Python SDK
 ```bash
 pip install alibabacloud-oss-v2
+```
+
+### C++ SDK
+从 GitHub 下载或克隆源码后与项目一起编译：
+```bash
+git clone https://github.com/aliyun/aliyun-oss-cpp-sdk.git
 ```
 
 ## 快速开始
@@ -48,14 +54,42 @@ cfg.region = "cn-hangzhou"
 client = oss.Client(cfg)
 ```
 
+**C++:**
+```cpp
+#include <alibabacloud/oss/OssClient.h>
+using namespace AlibabaCloud::OSS;
+
+int main(void)
+{
+    std::string Endpoint = "yourEndpoint";
+    std::string Region = "yourRegion";
+
+    InitializeSdk();
+    ClientConfiguration conf;
+    conf.signatureVersion = SignatureVersionType::V4;
+    conf.maxConnections = 20;
+    conf.requestTimeoutMs = 8000;
+    conf.connectTimeoutMs = 8000;
+
+    auto credentialsProvider = std::make_shared<EnvironmentVariableCredentialsProvider>();
+    OssClient client(Endpoint, credentialsProvider, conf);
+    client.SetRegion(Region);
+
+    // ... 执行业务操作 ...
+
+    ShutdownSdk();
+    return 0;
+}
+```
+
 ### 2. 凭证配置方式
 
-| 方式 | Go | Python |
-|-----|-----|--------|
-| 环境变量 | `credentials.NewEnvironmentVariableCredentialsProvider()` | `oss.credentials.EnvironmentVariableCredentialsProvider()` |
-| 静态凭证 | `credentials.NewStaticCredentialsProvider(ak, sk)` | `oss.credentials.StaticCredentialsProvider(ak, sk)` |
-| ECS实例角色 | `credentials.NewEcsRoleCredentialsProvider()` | 需配合credentials-python库 |
-| RAM角色 | 需配合credentials-go库 | 需配合credentials-python库 |
+| 方式 | Go | Python | C++ |
+|-----|-----|--------|-----|
+| 环境变量 | `credentials.NewEnvironmentVariableCredentialsProvider()` | `oss.credentials.EnvironmentVariableCredentialsProvider()` | `EnvironmentVariableCredentialsProvider()` |
+| 静态凭证 | `credentials.NewStaticCredentialsProvider(ak, sk)` | `oss.credentials.StaticCredentialsProvider(ak, sk)` | `SimpleCredentialsProvider(ak, sk)` |
+| ECS实例角色 | `credentials.NewEcsRoleCredentialsProvider()` | 需配合credentials-python库 | 需自行实现 |
+| RAM角色 | 需配合credentials-go库 | 需配合credentials-python库 | 需自行实现 |
 
 环境变量名：`OSS_ACCESS_KEY_ID`, `OSS_ACCESS_KEY_SECRET`, `OSS_SESSION_TOKEN`(可选)
 
@@ -123,6 +157,24 @@ result = client.put_object(oss.PutObjectRequest(
 ))
 ```
 
+```cpp
+// C++ 上传本地文件
+std::string BucketName = "examplebucket";
+std::string ObjectName = "exampledir/exampleobject.txt";
+std::shared_ptr<std::iostream> content = std::make_shared<std::fstream>(
+    "D:\\localpath\\examplefile.txt", std::ios::in | std::ios::binary);
+PutObjectRequest request(BucketName, ObjectName, content);
+
+auto outcome = client.PutObject(request);
+if (!outcome.isSuccess()) {
+    std::cout << "PutObject fail" <<
+    ",code:" << outcome.error().Code() <<
+    ",message:" << outcome.error().Message() <<
+    ",requestId:" << outcome.error().RequestId() << std::endl;
+    return -1;
+}
+```
+
 **文件上传:**
 ```go
 result, err := client.PutObjectFromFile(context.TODO(), 
@@ -135,6 +187,28 @@ result = client.put_object_from_file(
     oss.PutObjectRequest(bucket="bucket", key="key"),
     "/local/path/to/file"
 )
+```
+
+**追加上传:**
+```cpp
+// C++ 追加上传
+auto meta = ObjectMetaData();
+meta.setContentType("text/plain");
+
+std::shared_ptr<std::iostream> content1 = std::make_shared<std::stringstream>();
+*content1 << "Thank you for using Aliyun Object Storage Service!";
+AppendObjectRequest request(BucketName, ObjectName, content1, meta);
+request.setPosition(0L);
+
+auto result = client.AppendObject(request);
+if (!result.isSuccess()) { /* 异常处理 */ }
+
+std::shared_ptr<std::iostream> content2 = std::make_shared<std::stringstream>();
+*content2 << "Thank you for using Aliyun Object Storage Service!";
+auto position = result.result().Length();
+AppendObjectRequest appendObjectRequest(BucketName, ObjectName, content2);
+appendObjectRequest.setPosition(position);
+auto outcome = client.AppendObject(appendObjectRequest);
 ```
 
 ### 对象下载
@@ -310,6 +384,30 @@ result = client.complete_multipart_upload(oss.CompleteMultipartUploadRequest(
 ))
 ```
 
+### 列举文件
+
+**C++ 列举存储空间下的文件（默认100个）:**
+```cpp
+ListObjectsRequest request(BucketName);
+auto outcome = client.ListObjects(request);
+
+if (!outcome.isSuccess()) {
+    std::cout << "ListObjects fail" <<
+    ",code:" << outcome.error().Code() <<
+    ",message:" << outcome.error().Message() <<
+    ",requestId:" << outcome.error().RequestId() << std::endl;
+    return -1;
+}
+else {
+    for (const auto& object : outcome.result().ObjectSummarys()) {
+        std::cout << "object" <<
+        ",name:" << object.Key() <<
+        ",size:" << object.Size() <<
+        ",last modified time:" << object.LastModified() << std::endl;
+    }
+}
+```
+
 ## 高级功能
 
 ### 客户端加密
@@ -377,6 +475,7 @@ with client.append_file("bucket", "key") as f:
 
 ### 进度条
 
+**Go:**
 ```go
 progressFn := func(written, total int64) {
     rate := int(100 * float64(written) / float64(total))
@@ -391,6 +490,7 @@ client.PutObject(context.TODO(), &oss.PutObjectRequest{
 })
 ```
 
+**Python:**
 ```python
 def progress_fn(n, written, total):
     rate = int(100 * float(written) / float(total))
@@ -404,18 +504,65 @@ client.put_object(oss.PutObjectRequest(
 ))
 ```
 
+**C++:**
+```cpp
+void ProgressCallback(size_t increment, int64_t transfered, int64_t total, void* userData)
+{
+    // increment表示本次回调发送的数据大小。
+    // transfered表示已上传的数据大小。
+    // total表示上传文件的总大小。
+    std::cout << "ProgressCallback[" << userData << "] => " <<
+    increment << " ," << transfered << "," << total << std::endl;
+}
+
+std::shared_ptr<std::iostream> content = std::make_shared<std::fstream>(
+    "yourLocalFilename", std::ios::in | std::ios::binary);
+PutObjectRequest request(BucketName, ObjectName, content);
+
+TransferProgress progressCallback = { ProgressCallback , nullptr };
+request.setTransferProgress(progressCallback);
+
+auto outcome = client.PutObject(request);
+```
+
+### 上传回调
+
+**C++ 上传回调:**
+```cpp
+std::string ServerName = "https://example.aliyundoc.com:23450";
+std::shared_ptr<std::iostream> content = std::make_shared<std::stringstream>();
+*content << "Thank you for using Aliyun Object Storage Service!";
+
+std::string callbackBody = "bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}&my_var1=${x:var1}";
+ObjectCallbackBuilder builder(ServerName, callbackBody, "", ObjectCallbackBuilder::Type::URL);
+std::string value = builder.build();
+ObjectCallbackVariableBuilder varBuilder;
+varBuilder.addCallbackVariable("x:var1", "value1");
+std::string varValue = varBuilder.build();
+PutObjectRequest request(BucketName, ObjectName, content);
+request.MetaData().addHeader("x-oss-callback", value);
+request.MetaData().addHeader("x-oss-callback-var", varValue);
+auto outcome = client.PutObject(request);
+```
+
 ## 配置参数参考
 
-| 参数 | Go | Python | 说明 |
-|-----|-----|--------|------|
-| Region | `WithRegion("cn-hangzhou")` | `cfg.region = "cn-hangzhou"` | 必选 |
-| Endpoint | `WithEndpoint("...")` | `cfg.endpoint = "..."` | 自定义域名 |
-| 内网域名 | `WithUseInternalEndpoint(true)` | `cfg.use_internal_endpoint = True` | 使用内网访问 |
-| 传输加速 | `WithUseAccelerateEndpoint(true)` | `cfg.use_accelerate_endpoint = True` | 启用传输加速 |
-| 连接超时 | `WithConnectTimeout(10*time.Second)` | `cfg.connect_timeout = 10` | 默认5s(Go)/10s(Py) |
-| 读写超时 | `WithReadWriteTimeout(30*time.Second)` | `cfg.readwrite_timeout = 30` | 默认10s(Go)/20s(Py) |
-| 最大重试 | `WithRetryMaxAttempts(5)` | `cfg.retry_max_attempts = 5` | 默认3次 |
-| 跳过SSL校验 | `WithInsecureSkipVerify(true)` | `cfg.insecure_skip_verify = True` | 开发调试用 |
+| 参数 | Go | Python | C++ | 说明 |
+|-----|-----|--------|-----|------|
+| Region | `WithRegion("cn-hangzhou")` | `cfg.region = "cn-hangzhou"` | `client.SetRegion("cn-hangzhou")` | 必选 |
+| Endpoint | `WithEndpoint("...")` | `cfg.endpoint = "..."` | 构造时传入 Endpoint | 自定义域名 |
+| 内网域名 | `WithUseInternalEndpoint(true)` | `cfg.use_internal_endpoint = True` | - | 使用内网访问 |
+| 传输加速 | `WithUseAccelerateEndpoint(true)` | `cfg.use_accelerate_endpoint = True` | - | 启用传输加速 |
+| 连接超时 | `WithConnectTimeout(10*time.Second)` | `cfg.connect_timeout = 10` | `conf.connectTimeoutMs = 10000` | 默认5s(Go)/10s(Py)/5000ms(C++) |
+| 读写超时 | `WithReadWriteTimeout(30*time.Second)` | `cfg.readwrite_timeout = 30` | `conf.requestTimeoutMs = 10000` | 默认10s(Go)/20s(Py)/10000ms(C++) |
+| 最大连接数 | - | - | `conf.maxConnections = 16` | 默认16(C++) |
+| 最大重试 | `WithRetryMaxAttempts(5)` | `cfg.retry_max_attempts = 5` | `conf.retryStrategy` | 默认3次 |
+| 跳过SSL校验 | `WithInsecureSkipVerify(true)` | `cfg.insecure_skip_verify = True` | `conf.verifySSL = false` | 开发调试用 |
+| CA证书路径 | - | - | `conf.caPath` / `conf.caFile` | C++ 开启SSL校验时有效 |
+| CRC64校验 | - | - | `conf.enableCRC64 = true` | 默认开启(C++) |
+| 时间自动修正 | - | - | `conf.enableDateSkewAdjustment = true` | 默认开启(C++) |
+| 上传限速 | - | - | `conf.sendRateLimiter` | 单位 KB/s (C++) |
+| 下载限速 | - | - | `conf.recvRateLimiter` | 单位 KB/s (C++) |
 
 ## 详细参考
 

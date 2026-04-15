@@ -42,6 +42,12 @@ public:
 private:
   void send_request()
   {
+    // 判断服务是否就绪
+    if (!client_->service_is_ready()) {
+      RCLCPP_WARN(this->get_logger(), "服务 /add_two_ints 当前不可用，跳过本次请求");
+      return;
+    }
+
     // 创建请求
     auto request = std::make_shared<example_interfaces::srv::AddTwoInts::Request>();
     request->a = 10 + rand() % 90;  // 随机数 10-99
